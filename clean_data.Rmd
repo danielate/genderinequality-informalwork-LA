@@ -6,25 +6,170 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(tidyr)
+library(readxl)
+library(janitor)
+
 ```
 
-## R Markdown
+```{r GII LATAM,include=FALSE}
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+gii_latam <-
+  read.csv(
+    file = "raw-data/gii.csv",
+    skip = 1,
+    head = TRUE,
+    sep = ","
+  ) %>%
+  select(Country,
+         X2010,
+         X2011,
+         X2012,
+         X2013,
+         X2014,
+         X2015,
+         X2016,
+         X2017,
+         X2018) %>%
+  clean_names() %>%
+  filter(
+    country %in% c(
+      "Argentina",
+      "Bolivia (Plurinational State of)",
+      "Brazil",
+      "Chile",
+      "Colombia",
+      "Costa Rica",
+      "Cuba",
+      "Dominican Republic",
+      "Ecuador",
+      "El Salvador",
+      "Guatemala",
+      "Guyana",
+      "Haiti",
+      "Honduras",
+      "Jamaica",
+      "Mexico",
+      "Nicaragua",
+      "Panama",
+      "Paraguay",
+      "Peru",
+      "Saint Lucia",
+      "Suriname",
+      "Trinidad and Tobago",
+      "Uruguay",
+      "Venezuela (Bolivarian Republic of)"
+    )
+  )
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+```{r Women Informal Workers LATAM, include=FALSE}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+informal_latam_ilo <-
+  read.csv(file = "raw-data/pie.csv", head = TRUE, sep = ",") %>%
+  clean_names() %>%
+  select(i_ref_area_label, sex_label, time, obs_value) %>%
+  filter(
+    i_ref_area_label %in% c(
+      "Argentina",
+      "Bolivia",
+      "Brazil",
+      "Chile",
+      "Colombia",
+      "Costa Rica",
+      "Dominican Republic",
+      "Ecuador",
+      "El Salvador",
+      "Guatemala",
+      "Guyana",
+      "Haiti",
+      "Honduras",
+      "Jamaica",
+      "Mexico",
+      "Nicaragua",
+      "Panama",
+      "Paraguay",
+      "Peru",
+      "Saint Lucia",
+      "Suriname",
+      "Trinidad and Tobago",
+      "Uruguay",
+      "Venezuela, Bolivarian Republic of"
+    )
+  ) %>%
+  filter(sex_label %in% "Sex: Female")%>%
+  select(i_ref_area_label, time, obs_value) %>%
+  arrange(time) %>%
+  pivot_wider(names_from = "time",
+               values_from = "obs_value",
+              names_prefix = "x")%>%
+  select(i_ref_area_label,
+         x2010,
+         x2011,
+         x2012,
+         x2013,
+         x2014,
+         x2015,
+         x2016,
+         x2017,
+         x2018) %>%
+  rename(Country = i_ref_area_label)
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r Women Informal Workers LATAM, include=FALSE}
+
+informal_latam_wb <- 
+  read.csv(file = "raw-data/pie-wb.csv", skip = 3, head = TRUE, sep = ",") %>%
+  clean_names() %>%
+  select(country_name,
+         x2010,
+         x2011,
+         x2012,
+         x2013,
+         x2014,
+         x2015,
+         x2016,
+         x2017,
+         x2018) %>%
+  filter(
+    country_name %in% c(
+      "Argentina",
+      "Belize",
+      "Bolivia",
+      "Brazil",
+      "Chile",
+      "Colombia",
+      "Costa Rica",
+      "Cuba",
+      "Dominican Republic",
+      "Ecuador",
+      "El Salvador",
+      "Guatemala",
+      "Guyana",
+      "Haiti",
+      "Honduras",
+      "Jamaica",
+      "Mexico",
+      "Nicaragua",
+      "Panama",
+      "Paraguay",
+      "Peru",
+      "Saint Lucia",
+      "Suriname",
+      "Trinidad and Tobago",
+      "Uruguay",
+      "Venezuela, RB")) %>%
+  rename(Country = country_name)
+  
+```
+
+
+
