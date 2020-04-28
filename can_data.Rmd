@@ -93,3 +93,19 @@ informal_can_ilo <-
   rename(country = i_ref_area_label)
 
 ```
+
+```{r GII CAN animated plot}
+
+plot_gii_can <- gii_can %>%
+  pivot_longer(names_to = "Year",
+               values_to = "GII",
+               cols = -country ) 
+ 
+
+ggplot(plot_gii_can, aes(x = Year, y = GII, group = country, color = country)) +
+   geom_line() + 
+  geom_point(size = 1) 
+
+
+```
+
