@@ -38,7 +38,7 @@ ui <- fluidPage(
             p(
                 "For the past year I have been working on the design of Mink'a: 
                 A Creative Capacities Development Program for women informal workers 
-                in Latin America. This data analysis project aims support that work. 
+                in the . This data analysis project aims support that work. 
                 It suggests a correlation between gender inequality and women working in 
                 the informal economy in Latin America.The goal is to analyze how this 
                 already vulnerable group is restricted by issues of gender inequality."

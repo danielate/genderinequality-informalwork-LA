@@ -23,89 +23,38 @@ library(tidyverse)
 ```{r GII CAN,include=FALSE}
 
 gii_can <-
-  read.csv(
-    file = "raw-data/gii.csv",
-    skip = 1,
-    head = TRUE,
-    sep = ","
-  ) %>%
-  select(Country,
-         X2010,
-         X2011,
-         X2012,
-         X2013,
-         X2014,
-         X2015,
-         X2016,
-         X2017,
-         X2018) %>%
-  clean_names() %>%
-  filter(
-    country %in% c(
-      "Bolivia (Plurinational State of)",
+  read_rds("clean_data/gii_latam.rds") %>%
+  filter(country %in% c(
+      "Bolivia ",
       "Colombia",
       "Ecuador",
       "Peru"
     )
-  ) %>%
-  rename("2010" = x2010,
-         "2011" = x2011,
-         "2012" = x2012,
-         "2013" = x2013,
-         "2014" = x2014,
-         "2015" = x2015,
-         "2016" = x2016,
-         "2017" = x2017,
-         "2018" = x2018)
+  )
+  
 
 ```
 
 
 ```{r Women Informal Workers CAN, include=FALSE}
 
-informal_can_ilo <-
-  read.csv(file = "raw-data/pie.csv", head = TRUE, sep = ",") %>%
-  clean_names() %>%
-  select(i_ref_area_label, sex_label, time, obs_value) %>%
+informal_can <-
+  read_rds("clean_data/informal_latam.rds") %>%
   filter(
-    i_ref_area_label %in% c(
+    country %in% c(
       "Bolivia",
       "Colombia",
       "Ecuador",
       "Peru"
     )
-  ) %>%
-  filter(sex_label %in% "Sex: Female")%>%
-  select(i_ref_area_label, time, obs_value) %>%
-  arrange(time) %>%
-  pivot_wider(names_from = "time",
-               values_from = "obs_value") %>%
-  select(i_ref_area_label,
-         "2010",
-         "2011",
-         "2012",
-         "2013",
-         "2014",
-         "2015",
-         "2016",
-         "2017",
-         "2018") %>%
-  rename(country = i_ref_area_label)
-
+  )
+  
 ```
 
-```{r GII CAN animated plot}
+```{r, saving clean data}
 
-plot_gii_can <- gii_can %>%
-  pivot_longer(names_to = "Year",
-               values_to = "GII",
-               cols = -country ) 
- 
-
-ggplot(plot_gii_can, aes(x = Year, y = GII, group = country, color = country)) +
-   geom_line() + 
-  geom_point(size = 1) 
-
+saveRDS(gii_can, file = "clean_data/gii_can.rds")
+saveRDS(informal_can, file = "clean_data/informal_can.rds")
 
 ```
 

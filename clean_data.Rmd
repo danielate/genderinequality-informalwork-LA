@@ -14,6 +14,11 @@ library(readr)
 library(tidyr)
 library(readxl)
 library(janitor)
+library(skimr)
+library(broom)
+library(gt)
+library(tidyverse)
+library(rqdatatable)
 
 ```
 
@@ -27,15 +32,13 @@ gii_latam <-
     sep = ","
   ) %>%
   select(Country,
-         X2010,
          X2011,
          X2012,
          X2013,
          X2014,
          X2015,
          X2016,
-         X2017,
-         X2018) %>%
+         X2017) %>%
   clean_names() %>%
   filter(
     country %in% c(
@@ -59,16 +62,29 @@ gii_latam <-
       "Panama",
       "Paraguay",
       "Peru",
-      "Saint Lucia",
       "Suriname",
       "Trinidad and Tobago",
       "Uruguay",
       "Venezuela (Bolivarian Republic of)"
     )
-  )
+  ) %>%
+  rename("2011" = x2011,
+         "2012" = x2012,
+         "2013" = x2013,
+         "2014" = x2014,
+         "2015" = x2015,
+         "2016" = x2016,
+         "2017" = x2017)
 
 ```
 
+```{r, fix names}
+
+gii_latam$country <- str_replace(gii_latam$country, "\\(Bolivarian Republic of\\)", "")
+
+gii_latam$country <- str_replace(gii_latam$country,"\\(Plurinational State of\\)", "")
+
+```
 
 ```{r Women Informal Workers LATAM, include=FALSE}
 
@@ -111,18 +127,29 @@ informal_latam_ilo <-
                values_from = "obs_value",
               names_prefix = "x")%>%
   select(i_ref_area_label,
-         x2010,
          x2011,
          x2012,
          x2013,
          x2014,
          x2015,
          x2016,
-         x2017,
-         x2018) %>%
-  rename(Country = i_ref_area_label)
+         x2017) %>%
+  rename(Country = i_ref_area_label) %>%
+  rename("2011" = x2011,
+         "2012" = x2012,
+         "2013" = x2013,
+         "2014" = x2014,
+         "2015" = x2015,
+         "2016" = x2016,
+         "2017" = x2017, 
+         country = Country)
+
+informal_latam_ilo <- as.data.frame(informal_latam_ilo)
+
+informal_latam_ilo$country <- as.character(informal_latam_ilo$country)
 
 ```
+
 
 ```{r Women Informal Workers LATAM, include=FALSE}
 
@@ -130,19 +157,16 @@ informal_latam_wb <-
   read.csv(file = "raw-data/pie-wb.csv", skip = 3, head = TRUE, sep = ",") %>%
   clean_names() %>%
   select(country_name,
-         x2010,
          x2011,
          x2012,
          x2013,
          x2014,
          x2015,
          x2016,
-         x2017,
-         x2018) %>%
+         x2017) %>%
   filter(
     country_name %in% c(
       "Argentina",
-      "Belize",
       "Bolivia",
       "Brazil",
       "Chile",
@@ -167,9 +191,40 @@ informal_latam_wb <-
       "Trinidad and Tobago",
       "Uruguay",
       "Venezuela, RB")) %>%
-  rename(Country = country_name)
+  rename(Country = country_name) %>%
+  rename("2011" = x2011,
+         "2012" = x2012,
+         "2013" = x2013,
+         "2014" = x2014,
+         "2015" = x2015,
+         "2016" = x2016,
+         "2017" = x2017, 
+         country = Country)
+
+informal_latam_wb <- as.data.frame(informal_latam_wb)
+
+informal_latam_wb$country <- as.character(informal_latam_wb$country)
   
 ```
 
+```{r, joining informal}
+
+informal_latam_join <- informal_latam_ilo %>%
+  natural_join(informal_latam_wb, by = "country", jointype = "FULL")
+
+```
+
+```{r, fix names}
+
+informal_latam_join$country <- str_replace(informal_latam_join$country,"\\, RB", "")
+
+```
+
+```{r, save data}
+
+saveRDS(gii_latam, file = "clean_data/gii_latam.rds")
+saveRDS(informal_latam_join, file = "clean_data/informal_latam.rds")
+
+```
 
 

@@ -1,0 +1,32 @@
+---
+title: "graphs"
+author: "Daniela Teran"
+date: "5/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(tidyr)
+library(janitor)
+
+```
+
+```{r}
+
+gii_latam_df <- read_rds("clean_data/gii_latam.rds")
+gii_can_df <- read_rds("clean_data/gii_can.rds")
+
+informal_latam_df <- read_rds("clean_data/informal_latam.rds")
+informal_can_df <- read_csv("clean_data/informal_can.rds")
+
+```
+
+```{r}
+
+```
+
