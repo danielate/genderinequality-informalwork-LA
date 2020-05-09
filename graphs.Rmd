@@ -13,6 +13,7 @@ library(ggplot2)
 library(readr)
 library(tidyr)
 library(janitor)
+library(wesanderson)
 
 ```
 
@@ -22,11 +23,69 @@ gii_latam_df <- read_rds("clean_data/gii_latam.rds")
 gii_can_df <- read_rds("clean_data/gii_can.rds")
 
 informal_latam_df <- read_rds("clean_data/informal_latam.rds")
-informal_can_df <- read_csv("clean_data/informal_can.rds")
 
 ```
 
 ```{r}
+
+gii_latam_long <- gii_latam_df %>%
+  select(country, "2016") %>%
+  pivot_longer(
+    gii_latam_df,
+    cols = "2016",
+    names_to = "year",
+    values_to = "gii", values_drop_na = TRUE
+  )
+
+
+ggplot(gii_latam_long, aes(
+  x = country,
+  y = gii,
+  fill = (country %in% c("Bolivia", "Colombia", "Ecuador", "Peru"))
+)) +
+  geom_col() +
+  labs(
+    title = "Gender Inequality Index of Latin American Countries",
+    subtitle = "Year 2016",
+    caption = "Source: United Nations Development Programme",
+    x = "Country",
+    y = "Gender Inequality Index (GII) ",
+    fill = "Andean Community Countries") +
+  theme_classic() +
+  theme(legend.position = "right",
+        axis.text.x = element_text(angle = 45, hjust = 1)) 
+  
+```
+
+
+```{r}
+
+informal_latam_long <- informal_latam_df %>%
+  select(country, "2016") %>%
+  pivot_longer(
+    informal_latam_df,
+    cols = "2016",
+    names_to = "year",
+    values_to = "informality",
+    values_drop_na = TRUE
+  )
+
+ggplot(informal_latam_long, aes(
+  x = country,
+  y = informality,
+  fill = (country %in% c("Bolivia", "Colombia", "Ecuador", "Peru"))
+)) +
+  geom_col() +
+  labs(
+    title = "Women Working in Informal Economy in Latin America",
+    subtitle = "Year 2016",
+    caption = "Source: International Labor Organization.",
+    x = "Country",
+    y = "Percentage",
+    fill = "Andean Community Countries") +
+  theme_classic() +
+  theme(legend.position = "right",
+        axis.text.x = element_text(angle = 45, hjust = 1)) 
 
 ```
 

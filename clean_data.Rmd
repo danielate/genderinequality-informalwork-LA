@@ -216,13 +216,18 @@ informal_latam_join <- informal_latam_ilo %>%
 
 ```{r, fix names}
 
+informal_latam_join <- as.data.frame(informal_latam_join)
+informal_latam_join$country <- as.character(informal_latam_join$country)
+
 informal_latam_join$country <- str_replace(informal_latam_join$country,"\\, RB", "")
 
 ```
 
+
 ```{r, save data}
 
 saveRDS(gii_latam, file = "clean_data/gii_latam.rds")
+
 saveRDS(informal_latam_join, file = "clean_data/informal_latam.rds")
 
 ```

@@ -32,7 +32,6 @@ gii_can <-
     )
   )
   
-
 ```
 
 
@@ -45,16 +44,33 @@ informal_can <-
       "Bolivia",
       "Colombia",
       "Ecuador",
-      "Peru"
-    )
-  )
-  
+      "Peru"))
+
+```
+
+```{r}
+
+gii_can_longer <- gii_can %>% 
+  pivot_longer(cols = c("2011", "2012", "2013", "2014", "2015", "2016", "2017"),
+               names_to = "year",
+               values_to = "gii")
+
+informal_can_longer <- informal_can %>%
+   pivot_longer(cols = c("2011", "2012", "2013", "2014", "2015", "2016", "2017"),
+               names_to = "year",
+               values_to = "informality")
+
+data_join <- gii_can_longer %>%
+  left_join(informal_can_longer, by = "country")
+
 ```
 
 ```{r, saving clean data}
 
 saveRDS(gii_can, file = "clean_data/gii_can.rds")
+
 saveRDS(informal_can, file = "clean_data/informal_can.rds")
+
 
 ```
 

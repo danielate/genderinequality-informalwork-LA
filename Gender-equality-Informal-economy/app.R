@@ -16,67 +16,56 @@ library(infer)
 library(scales)
 library(tidyverse)
 
+
+
+
 ui <- fluidPage(
     # I add a theme
     theme = shinytheme("journal"),
     
     navbarPage(
-        tags$b("Gender Equality and the Informal Economy in Latin America"),
+        tags$b("Gender Equality and the Informal Economy: An analysis of the Andean Community Countries"),
         
         # I create the layout for the first tab
         tabPanel(
             "Background",
-            imageOutput("image", width = "100%", height = "100%"),
+            
+            imageOutput("can", width = "100%", height = "100%"), br(),
+            
+            p(tags$em("Photograph: Andean Community Countries"), align = "center"),
             br(),
             
-            p(tags$em("Photograph: Artisanal goldminers in Sechocha, Peru."), align = "center"),
-            br(),
-            
-            h3("Project Background and Motivations"),
+            h3("The Andean Community"),
             br(),
             
             p(
-                "For the past year I have been working on the design of Mink'a: 
-                A Creative Capacities Development Program for women informal workers 
-                in the . This data analysis project aims support that work. 
-                It suggests a correlation between gender inequality and women working in 
-                the informal economy in Latin America.The goal is to analyze how this 
-                already vulnerable group is restricted by issues of gender inequality."
+                "The Andean Community (Comunidad Andina, CAN) is an international organization 
+                made up by Bolivia, Colombia, Ecuador, and Peru. It exists since 1969 and the 
+                goal is to achieve economic, political, and social cooperation. These countries 
+                where selected as the sample for this analysis because they share similar cultures, 
+                challenges, and resources, besides their existing aim of cooperation through the 
+                CAN organization. The Andean Community has 98 million inhabitants living in an 
+                area of 4,700,000 square kilometers, whose Gross Domestic Product for 2011 
+                amounts to US$902.86 billion.
+                
+                These project aims to visualize the possible correlation between the percentage of women 
+                working in the informal economy in the countries of the CAN conmmunity and the gender inequality
+                index."
             ),
             br(),
+            
             h4(tags$b("Supporting women in the informal economy takes us closer to the 
                       goal of gender equity!"))),
-        
         
                  
         tabPanel("Gender Inequality Index",
                  fluidPage(titlePanel("Score over time"),
                            br(),
-                           p(tags$em("Select a Latin American Country")),
-                             selectInput("countryInput", "Country", c("Argentina",
-                                                                      "Bolivia",
-                                                                      "Brazil",
-                                                                      "Chile",
+                           p(tags$em("Select an Andean Community Country")),
+                             selectInput("countryInput", "Country", c("Bolivia",
                                                                       "Colombia",
-                                                                      "Costa Rica",
-                                                                      "Dominican Republic",
                                                                       "Ecuador",
-                                                                      "El Salvador",
-                                                                      "Guatemala",
-                                                                      "Guyana",
-                                                                      "Haiti",
-                                                                      "Honduras",
-                                                                      "Jamaica",
-                                                                      "Mexico",
-                                                                      "Nicaragua",
-                                                                      "Panama",
-                                                                      "Paraguay",
-                                                                      "Peru",
-                                                                      "Saint Lucia",
-                                                                      "Suriname",
-                                                                      "Trinidad and Tobago",
-                                                                      "Uruguay",
-                                                                      "Venezuela"), multiple = TRUE),
+                                                                      "Peru"), multiple = TRUE),
             
                            mainPanel(plotOutput(
                                knitr::include_graphics("graphics/percentage_time.png")
@@ -85,31 +74,11 @@ ui <- fluidPage(
         tabPanel("Proportion of Informal Employment",
                  fluidPage(titlePanel("Percentage over time"),
                            br(),
-                           p(tags$em("Select a Latin American Country")),
-                           selectInput("countryInput", "Country", c("Argentina",
-                                                                    "Bolivia",
-                                                                    "Brazil",
-                                                                    "Chile",
+                           p(tags$em("Select an Andean community Country")),
+                           selectInput("countryInput", "Country", c("Bolivia",
                                                                     "Colombia",
-                                                                    "Costa Rica",
-                                                                    "Dominican Republic",
                                                                     "Ecuador",
-                                                                    "El Salvador",
-                                                                    "Guatemala",
-                                                                    "Guyana",
-                                                                    "Haiti",
-                                                                    "Honduras",
-                                                                    "Jamaica",
-                                                                    "Mexico",
-                                                                    "Nicaragua",
-                                                                    "Panama",
-                                                                    "Paraguay",
-                                                                    "Peru",
-                                                                    "Saint Lucia",
-                                                                    "Suriname",
-                                                                    "Trinidad and Tobago",
-                                                                    "Uruguay",
-                                                                    "Venezuela"), multiple = TRUE),
+                                                                    "Peru"), multiple = TRUE),
                            
                            mainPanel(plotOutput(
                                knitr::include_graphics("graphics/percentage_time.png")
@@ -121,7 +90,7 @@ ui <- fluidPage(
                                knitr::include_graphics("graphics/percentage_time.png")
                            )))),
         
-        tabPanel("Data Overview",
+        tabPanel("About",
                  fluidPage(
             
             h3("Gender Innequality Index"),
@@ -179,36 +148,34 @@ ui <- fluidPage(
                 domestic workers by households."),
             
             p("Source: https://www.ilo.org/shinyapps/bulkexplorer38/?lang=en&segment=indicator&id=SDG_A831_SEX_RT_A"),
-            br()
+            br(),
+            
+            h3("About me"),
+            p("Daniela Teran"),
+            br(),
+            
+            p( "I am a Master in Design Engineering student, interested in capacity building for low-income workers. 
+               This past year I have been working on the design of a development program, focused on creative capacity building 
+               for women workers in the informal economy in Latin America. This data project aims to support the design of that
+               program.
+               
+               For more information: dteran@mde.harvard.edu
+               
+               https://github.com/danielate")
+                
             ))))
     
-server <- function(input, output, session) {
+server <- function(input, output) {
     
-    output$image <- renderImage({
-        list(
-            src = './graphics/secocha.png',
-            height = 400,
-            width = 400,
-            style = "display: block; margin-left: auto; margin-right: auto;"
-        )
-    }, deleteFile = FALSE)
-    
-    output$line_plot <- renderPlot({
-            # generate type based on input$plot_type from ui
-            ifelse(
-                input$plot_type == "a",
-                # if input$plot_type is "a", plot histogram of "waiting" column 
-                # from the faithful dataframe
-                x   <- faithful[, 2],
-                # if input$plot_type is "b", plot histogram of "eruptions" column
-                # from the faithful dataframe
-                x   <- faithful[, 1]
-            )
-            # draw the histogram with the specified number of bins
-            hist(x, col = 'darkgray', border = 'white')
-        })
-    }
-    
-    # Run the application 
-    shinyApp(ui = ui, server = server)
-    
+    output$distPlot <- renderPlot({
+        # generate bins based on input$bins from ui.R
+        x    <- faithful[, 2]
+        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+        
+        # draw the histogram with the specified number of bins
+        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
