@@ -82,7 +82,7 @@ gii_latam <-
 
 gii_latam$country <- str_replace(gii_latam$country, "\\(Bolivarian Republic of\\)", "")
 
-gii_latam$country <- str_replace(gii_latam$country,"\\(Plurinational State of\\)", "")
+gii_latam$country <- str_replace(gii_latam$country," \\(Plurinational State of\\)", "")
 
 ```
 

@@ -13,20 +13,24 @@ library(ggplot2)
 library(readr)
 library(tidyr)
 library(janitor)
+library(hablar)
 library(wesanderson)
 
 ```
 
-```{r}
+```{r load data}
 
 gii_latam_df <- read_rds("clean_data/gii_latam.rds")
 gii_can_df <- read_rds("clean_data/gii_can.rds")
 
 informal_latam_df <- read_rds("clean_data/informal_latam.rds")
+informal_can_df <- read_rds("clean_data/informal_can.rds")
+
+join_df <- read_rds("clean_data/data_can_join.rds")
 
 ```
 
-```{r}
+```{r gii latam}
 
 gii_latam_long <- gii_latam_df %>%
   select(country, "2016") %>%
@@ -58,7 +62,7 @@ ggplot(gii_latam_long, aes(
 ```
 
 
-```{r}
+```{r informal latam}
 
 informal_latam_long <- informal_latam_df %>%
   select(country, "2016") %>%
@@ -79,13 +83,82 @@ ggplot(informal_latam_long, aes(
   labs(
     title = "Women Working in Informal Economy in Latin America",
     subtitle = "Year 2016",
-    caption = "Source: International Labor Organization.",
+    caption = "Source: International Labor Organization and World Bank",
     x = "Country",
     y = "Percentage",
     fill = "Andean Community Countries") +
   theme_classic() +
   theme(legend.position = "right",
         axis.text.x = element_text(angle = 45, hjust = 1)) 
+
+```
+
+```{r gii can}
+
+plot_gii_can <- gii_can_df %>%
+  pivot_longer(names_to = "Year",
+               values_to = "GII",
+               cols = -country ) 
+
+ggplot(plot_gii_can, aes(x = Year, y = GII, group = country, color = country)) +
+   geom_line() + 
+  geom_point(size = 1) +
+  theme_classic() + 
+  labs(
+    title = "Gender Inequality Index Over Time",
+    subtitle = "Years 2011 to 2017",
+    caption = "Source: United Nations Development Programme",
+    x = "Country",
+    y = "Gender Inequality Index (GII) ",
+    color = "Country")
+
+```
+
+```{r}
+
+plot_informal_can <- informal_can_df %>%
+  pivot_longer(names_to = "Year",
+               values_to = "Informality",
+               cols = -country ) 
+
+ggplot(plot_informal_can, aes(x = Year, y = Informality, group = country, color = country)) +
+   geom_line() + 
+  geom_point(size = 1) +
+  theme_classic() + 
+  labs(
+    title = "Percentage of Women in Informal Work Over Time",
+    subtitle = "Years 2011 to 2017",
+    caption = "Source: International Labor Organization and World Bank",
+    x = "Country",
+    y = "Percentage",
+    color = "Country")
+
+```
+
+
+```{r }
+
+join_df$gii <- as.numeric(as.character(join_df$gii))
+
+model <- lm(`gii` ~ `informality`, data = join_df)
+```
+
+```{r}
+
+correlation <- join_df %>%
+  summarize(correlation = cor(gii, informality))
+
+join_df %>%
+  ggplot(aes(x = informality, y = gii)) +
+  geom_point() +
+  labs(x = "Percentage", y = "Gender Inequality Index",
+       title = "Relationship between Percentage of Women in Informal Work 
+        and the Gender Inequality Index",
+       subtitle = "CAN Countries. 
+       Years 2011 to 2017.",
+       caption = "Source: United Nations Development Programme. International Labor Organization and World Bank") +  
+  geom_smooth(method = "lm", se = FALSE, color = "pink") +
+  theme_classic()
 
 ```
 
