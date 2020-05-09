@@ -1,0 +1,12 @@
+name: gii_informal
+title: gii_informal
+username:
+account: danielateran
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2272885
+bundleId: 3125354
+url: https://danielateran.shinyapps.io/gii_informal/
+when: 1589059409.33037
+asMultiple: FALSE
+asStatic: FALSE

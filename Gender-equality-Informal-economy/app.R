@@ -9,14 +9,26 @@ library(janitor)
 library(gt)
 library(rvest)
 library(reprex)
-library(fivethirtyeight)
 library(stringr)
-library(shinythemes)
 library(infer)
 library(scales)
 library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(tidyr)
+library(hablar)
+library(wesanderson)
 
+gii_latam_s <- read_rds("gii_latam.rds")
+gii_can_s <- read_rds("gii_can.rds")
 
+informal_latam_s <- read_rds("informal_latam.rds")
+informal_can_s <- read_rds("informal_can.rds")
+
+join_s <- read_rds("data_can_join.rds")
+
+gii_latam_long_s <- read_rds("gii_latam_long.rds")
 
 
 ui <- fluidPage(
@@ -26,11 +38,14 @@ ui <- fluidPage(
     navbarPage(
         tags$b("Gender Equality and the Informal Economy: An analysis of the Andean Community Countries"),
         
-        # I create the layout for the first tab
+# TAB 1: Background
+
         tabPanel(
             "Background",
+            br(),
             
-            imageOutput("can", width = "100%", height = "100%"), br(),
+            imageOutput("can", width = "100%", height = "100%"), 
+            br(),
             
             p(tags$em("Photograph: Andean Community Countries"), align = "center"),
             br(),
@@ -38,6 +53,9 @@ ui <- fluidPage(
             h3("The Andean Community"),
             br(),
             
+            fluidRow(column(2), column(8,
+           
+                                                                 
             p(
                 "The Andean Community (Comunidad Andina, CAN) is an international organization 
                 made up by Bolivia, Colombia, Ecuador, and Peru. It exists since 1969 and the 
@@ -51,13 +69,26 @@ ui <- fluidPage(
                 These project aims to visualize the possible correlation between the percentage of women 
                 working in the informal economy in the countries of the CAN conmmunity and the gender inequality
                 index."
-            ),
+            ))),
+            br(),
+            
+            h3("Overview of the Gender Inequality Index in Latin America"), 
+            br(),
+            
+            plotOutput("giilatam"),
+            br(),
+            
+            h3("Overview of the Percentage of Women in Informal Employment in Latin America"), 
+            br(),
+            
+            plotOutput("informalitylatam"),
             br(),
             
             h4(tags$b("Supporting women in the informal economy takes us closer to the 
                       goal of gender equity!"))),
         
-                 
+# TAB 2: Gender Inequality Index 
+
         tabPanel("Gender Inequality Index",
                  fluidPage(titlePanel("Score over time"),
                            br(),
@@ -65,12 +96,15 @@ ui <- fluidPage(
                              selectInput("countryInput", "Country", c("Bolivia",
                                                                       "Colombia",
                                                                       "Ecuador",
-                                                                      "Peru"), multiple = TRUE),
+                                                                      "Peru"), multiple = FALSE),
             
                            mainPanel(plotOutput(
                                knitr::include_graphics("graphics/percentage_time.png")
-                           )))), 
-    
+                           ))
+                           )), 
+
+# TAB 3: Proportion of Informal Employment 
+
         tabPanel("Proportion of Informal Employment",
                  fluidPage(titlePanel("Percentage over time"),
                            br(),
@@ -78,18 +112,24 @@ ui <- fluidPage(
                            selectInput("countryInput", "Country", c("Bolivia",
                                                                     "Colombia",
                                                                     "Ecuador",
-                                                                    "Peru"), multiple = TRUE),
+                                                                    "Peru"), multiple = FALSE),
                            
                            mainPanel(plotOutput(
                                knitr::include_graphics("graphics/percentage_time.png")
-                           )))),
-        
+                           ))
+                           )),
+ 
+# TAB 4: Correlation 
+
+
         tabPanel("Correlation",
                  fluidPage(titlePanel("Linear Regression"),
                            mainPanel(plotOutput(
                                knitr::include_graphics("graphics/percentage_time.png")
                            )))),
-        
+
+# TAN 5: About 
+
         tabPanel("About",
                  fluidPage(
             
@@ -125,7 +165,7 @@ ui <- fluidPage(
                 disadvantages of women."),
             br(),
             
-            p("Source: http://hdr.undp.org/en/content/gender-inequality-index"),
+            p("Source:"), p(tags$a("http://hdr.undp.org/en/content/gender-inequality-index")),
             br(),
             
             h3("Proportion of Informal Employment in non-agricultural employment – Harmonized series (%)"),
@@ -147,11 +187,14 @@ ui <- fluidPage(
                 employed by formal sector enterprises, informal sector enterprises, or as paid 
                 domestic workers by households."),
             
-            p("Source: https://www.ilo.org/shinyapps/bulkexplorer38/?lang=en&segment=indicator&id=SDG_A831_SEX_RT_A"),
+            p("Source:"), p(tags$a("https://www.ilo.org/shinyapps/bulkexplorer38/?lang=en&segment=indicator&id=SDG_A831_SEX_RT_A")),
             br(),
             
             h3("About me"),
             p("Daniela Teran"),
+
+            tags$img(src='./daniela.jpg', height=150, width=150),
+            
             br(),
             
             p( "I am a Master in Design Engineering student, interested in capacity building for low-income workers. 
@@ -159,23 +202,33 @@ ui <- fluidPage(
                for women workers in the informal economy in Latin America. This data project aims to support the design of that
                program.
                
-               For more information: dteran@mde.harvard.edu
+               For more information: dteran@mde.harvard.edu"),
                
-               https://github.com/danielate")
+               p(tags$a("https://github.com/danielate"))
                 
             ))))
     
-server <- function(input, output) {
+server <- function(input, output, session) {
     
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    output$can <- renderImage({
+        list(src = 'Gender-equality-Informal-economy/Andean_Community.png',
+             height = 500,
+             width = 500,
+             style = "display: block; margin-left: auto; margin-right: auto;")},
+        deleteFile = FALSE)
+    
+    
+    output$giilatam <- renderPlot({
         
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+        gii_latam_long_s %>%
+        
+        ggplot(aes(
+            x = country,
+            y = gii) + geom_col()
+        ) 
     })
+    
 }
 
-# Run the application 
-shinyApp(ui = ui, server = server)
+
+shinyApp(ui, server)

@@ -61,6 +61,11 @@ ggplot(gii_latam_long, aes(
   
 ```
 
+```{r}
+
+saveRDS(gii_latam_long, file = "Gender-equality-Informal-economy/gii_latam_long.rds")
+```
+
 
 ```{r informal latam}
 
@@ -93,6 +98,11 @@ ggplot(informal_latam_long, aes(
 
 ```
 
+```{r}
+
+saveRDS(informal_latam_long, file = "gii_informal/informal_latam_long.rds")
+```
+
 ```{r gii can}
 
 plot_gii_can <- gii_can_df %>%
@@ -116,6 +126,12 @@ ggplot(plot_gii_can, aes(x = Year, y = GII, group = country, color = country)) +
 
 ```{r}
 
+saveRDS(plot_gii_can, file = "gii_informal/gii_can_long.rds")
+```
+
+
+```{r}
+
 plot_informal_can <- informal_can_df %>%
   pivot_longer(names_to = "Year",
                values_to = "Informality",
@@ -135,6 +151,10 @@ ggplot(plot_informal_can, aes(x = Year, y = Informality, group = country, color 
 
 ```
 
+```{r}
+
+saveRDS(plot_informal_can, file = "gii_informal/informal_can_long.rds")
+```
 
 ```{r }
 
@@ -162,3 +182,7 @@ join_df %>%
 
 ```
 
+```{r}
+
+saveRDS(join_df, file = "gii_informal/join_can.rds")
+```
